@@ -1,0 +1,472 @@
+// // // src/components/VendorManagementPage.js
+// // import React from 'react';
+// // import { Container, Row, Col, Card } from 'react-bootstrap';
+
+// // const VendorManagementPage = () => {
+// //   // Dummy data
+// //   const totalActiveVendors = 150;
+// //   const lastTotalActiveVendors = 150;
+
+// //   return (
+// //     <Container className="my-4">
+// //       <header className="text-center mb-4">
+// //         <h1>Vendor Management Page</h1>
+// //       </header>
+// //       <Row>
+// //         <Col md={6} className="mb-4">
+// //           <Card bg="light" text="dark" className="text-center">
+// //             <Card.Body>
+// //               <Card.Title>Total Active Vendors</Card.Title>
+// //               <Card.Text className="display-3 font-weight-bold">
+// //                 {totalActiveVendors}
+// //               </Card.Text>
+// //             </Card.Body>
+// //           </Card>
+// //         </Col>
+// //         <Col md={6} className="mb-4">
+// //           <Card bg="light" text="dark" className="text-center">
+// //             <Card.Body>
+// //               <Card.Title>Last Total Active Vendors</Card.Title>
+// //               <Card.Text className="display-3 font-weight-bold">
+// //                 {lastTotalActiveVendors}
+// //               </Card.Text>
+// //             </Card.Body>
+// //           </Card>
+// //         </Col>
+// //       </Row>
+// //     </Container>
+// //   );
+// // };
+
+// // export default VendorManagementPage;
+// import React, { useState } from 'react';
+// import { Table, Form, Button, InputGroup } from 'react-bootstrap';
+
+// const VendorManagementPage = () => {
+//   const [filter, setFilter] = useState('');
+//   const [users] = useState([
+//     { username: 'anusha', email: 'anu@gmail.com', permissions: 'Admin', groups: 'True', date: '2020-07-03 12:21:04' },
+//     { username: 'Vinni', email: 'vinnibujji@gmail.com', permissions: 'User Manager', groups: 'True', date: '2020-11-05 13:05:22' },
+//     { username: 'akshitha', email: 'mvinod2025@gmail.com', permissions: 'User', groups: 'False', date: '2022-05-04 16:09:37' },
+    
+//   ]);
+
+//   const handleFilterChange = (e) => {
+//     setFilter(e.target.value);
+//   };
+
+//   const filteredUsers = users.filter(user => 
+//     user.username.toLowerCase().includes(filter.toLowerCase()) ||
+//     user.email.toLowerCase().includes(filter.toLowerCase())
+//   );
+
+//   return (
+//     <div className="container mt-4">
+//       <div className="d-flex justify-content-start align-items-center mb-3" style={{ position: 'relative' }}>
+//         <InputGroup style={{ width: '500px', marginLeft: '800px' }}> 
+//           <Form.Control 
+//             type="text" 
+//             placeholder="Filter by name or email" 
+//             value={filter}
+//             onChange={handleFilterChange}
+//           />
+//           <Button 
+//             variant="primary" 
+//             className="ms-2"
+//             style={{ width: '150px' }}  
+//           >
+//             Add User
+//           </Button>
+//         </InputGroup>
+//       </div>
+
+//       <Table striped bordered hover responsive>
+//         <thead>
+//           <tr>
+//             <th>Username</th>
+//             <th>Email</th>
+//             <th>Permissions</th>
+//             <th>Active</th>
+//             <th>Created date</th>
+//             <th></th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {filteredUsers.map((user, index) => (
+//             <tr key={index} className="bg-light"> {/* Apply a Bootstrap background color */}
+//               <td>{user.username}</td>
+//               <td>
+//                 <i className="fas fa-user me-2"></i> 
+//                 {user.email}
+//               </td>
+//               <td>{user.permissions}</td>
+//               <td>{user.groups}</td>
+//               <td>{user.date}</td>
+//               <td>
+//                 <Button variant="outline-secondary" size="sm" className="me-2">
+//                   <i className="fas fa-edit"></i>
+//                 </Button>
+//                 <Button variant="outline-danger" size="sm">
+//                   <i className="fas fa-trash"></i>
+//                 </Button>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </Table>
+//     </div>
+//   );
+// };
+
+// export default VendorManagementPage;
+
+
+// import React, { useState } from 'react';
+// import { Table, Form, Button, InputGroup, Pagination, Modal } from 'react-bootstrap';
+// import { FaEdit, FaTrash, FaUndo } from 'react-icons/fa';
+
+// const VendorManagementPage = () => {
+//   const [filter, setFilter] = useState('');
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [showAddUserForm, setShowAddUserForm] = useState(false);
+//   const [showEditUserForm, setShowEditUserForm] = useState(false);
+//   const [newUser, setNewUser] = useState({
+//     username: '',
+//     email: '',
+//     PhoneNumber: '',
+//     Active: 'True',
+//     date: ''
+//   });
+//   const [editUser, setEditUser] = useState(null);
+
+//   const recordsPerPage = 8;
+
+//   const [users, setUsers] = useState([
+//     // Sample data for testing
+//     { username: 'JohnDoe', email: 'john@example.com', PhoneNumber: '1234567890', Active: 'True', date: '2024-09-01T12:00:00Z' },
+//     // Add more users as needed
+//   ]);
+
+//   const handleFilterChange = (e) => {
+//     setFilter(e.target.value);
+//     setCurrentPage(1);
+//   };
+
+//   const filteredUsers = users.filter(user =>
+//     (user.username.toLowerCase().includes(filter.toLowerCase()) ||
+//     user.email.toLowerCase().includes(filter.toLowerCase())) &&
+//     (user.Active === 'True' || (user.Active === 'False' && filter.trim() !== ''))
+//   );
+
+//   const totalUsers = filteredUsers.length;
+//   const activeUsers = filteredUsers.filter(user => user.Active === 'True').length;
+//   const totalPages = Math.ceil(totalUsers / recordsPerPage);
+//   const startIndex = (currentPage - 1) * recordsPerPage;
+//   const currentUsers = filteredUsers.slice(startIndex, startIndex + recordsPerPage);
+
+//   const handlePageChange = (pageNumber) => {
+//     setCurrentPage(pageNumber);
+//   };
+
+//   const handlePreviousPage = () => {
+//     if (currentPage > 1) {
+//       setCurrentPage(currentPage - 1);
+//     }
+//   };
+
+//   const handleNextPage = () => {
+//     if (currentPage < totalPages) {
+//       setCurrentPage(currentPage + 1);
+//     }
+//   };
+
+//   const handleShowAddUserForm = () => setShowAddUserForm(true);
+//   const handleCloseAddUserForm = () => setShowAddUserForm(false);
+
+//   const handleShowEditUserForm = (user) => {
+//     setEditUser(user);
+//     setShowEditUserForm(true);
+//   };
+//   const handleCloseEditUserForm = () => {
+//     setEditUser(null);
+//     setShowEditUserForm(false);
+//   };
+
+//   const handleInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setNewUser({
+//       ...newUser,
+//       [name]: value
+//     });
+//   };
+
+//   const handleEditInputChange = (e) => {
+//     const { name, value } = e.target;
+//     setEditUser({
+//       ...editUser,
+//       [name]: value
+//     });
+//   };
+
+//   const handleAddFormSubmit = (e) => {
+//     e.preventDefault();
+//     setUsers([...users, { ...newUser, date: new Date().toISOString() }]);
+//     setNewUser({
+//       username: '',
+//       email: '',
+//       PhoneNumber: '',
+//       Active: 'True',
+//       date: ''
+//     });
+//     handleCloseAddUserForm();
+//   };
+
+//   const handleEditFormSubmit = (e) => {
+//     e.preventDefault();
+//     setUsers(users.map(user => user.email === editUser.email ? editUser : user));
+//     handleCloseEditUserForm();
+//   };
+
+//   const handleDeleteUser = (user) => {
+//     setUsers(users.map(u => u.email === user.email ? { ...u, Active: 'False' } : u));
+//   };
+
+//   const handleRestoreUser = (user) => {
+//     setUsers(users.map(u => u.email === user.email ? { ...u, Active: 'True' } : u));
+//   };
+
+//   return (
+//     <div className="container mt-4">
+//       <div className="d-flex justify-content-start align-items-center mb-3">
+//         <InputGroup style={{ width: '500px', marginLeft: 'auto', marginRight: '0' }}> 
+//           <Form.Control 
+//             type="text" 
+//             placeholder="Filter by name or email" 
+//             value={filter}
+//             onChange={handleFilterChange}
+//           />
+//           <Button 
+//             variant="primary" 
+//             className="ms-2"
+//             style={{ width: '150px' }}  
+//             onClick={handleShowAddUserForm}
+//           >
+//             Add User
+//           </Button>
+//         </InputGroup>
+//       </div>
+
+//       <div className="mb-3" style={{ position: 'relative' }}>
+//         <span>Total Users: {totalUsers}</span>
+//         <span style={{ position: 'absolute', left: '1160px' }}>Active Users: {activeUsers}</span>
+//       </div>
+
+//       <Table striped bordered hover responsive>
+//         <thead>
+//           <tr>
+//             <th>Username</th>
+//             <th>Email</th>
+//             <th>PhoneNumber</th>
+//             <th>Active</th>
+//             <th>Created date</th>
+//             <th></th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {currentUsers.map((user, index) => (
+//             <tr key={index} className={user.Active === 'False' ? 'bg-secondary text-white' : 'bg-light'}>
+//               <td>
+//                 <i className="fas fa-user me-2"></i> {user.username}
+//               </td>
+//               <td>{user.email}</td>
+//               <td>{user.PhoneNumber}</td>
+//               <td>{user.Active}</td>
+//               <td>{user.date}</td>
+//               <td>
+//                 <Button 
+//                   variant="outline-secondary" 
+//                   size="sm" 
+//                   className="me-2" 
+//                   onClick={() => handleShowEditUserForm(user)}
+//                 >
+//                   <FaEdit />
+//                 </Button>
+//                 {user.Active === 'True' ? (
+//                   <Button 
+//                     variant="outline-danger" 
+//                     size="sm" 
+//                     onClick={() => handleDeleteUser(user)}
+//                   >
+//                     <FaTrash />
+//                   </Button>
+//                 ) : (
+//                   <Button 
+//                     variant="outline-success" 
+//                     size="sm" 
+//                     onClick={() => handleRestoreUser(user)}
+//                   >
+//                     <FaUndo />
+//                   </Button>
+//                 )}
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </Table>
+
+//       <div className="d-flex justify-content-center mt-3" style={{ marginLeft: '1150px' }}>
+//         <Pagination>
+//           <Pagination.Prev 
+//             onClick={handlePreviousPage} 
+//             disabled={currentPage === 1}
+//           />
+//           {Array.from({ length: totalPages }).map((_, index) => (
+//             <Pagination.Item 
+//               key={index + 1} 
+//               active={index + 1 === currentPage} 
+//               onClick={() => handlePageChange(index + 1)}
+//             >
+//               {index + 1}
+//             </Pagination.Item>
+//           ))}
+//           <Pagination.Next 
+//             onClick={handleNextPage} 
+//             disabled={currentPage === totalPages}
+//           />
+//         </Pagination>
+//       </div>
+
+//       {/* Add User Modal */}
+//       <Modal 
+//         show={showAddUserForm} 
+//         onHide={handleCloseAddUserForm} 
+//         centered
+//       >
+//         <Modal.Header closeButton>
+//           <Modal.Title>Add New User</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>
+//           <Form onSubmit={handleAddFormSubmit}>
+//             <Form.Group controlId="formUsername">
+//               <Form.Label>Username</Form.Label>
+//               <Form.Control
+//                 type="text"
+//                 name="username"
+//                 value={newUser.username}
+//                 onChange={handleInputChange}
+//                 required
+//               />
+//             </Form.Group>
+//             <Form.Group controlId="formEmail">
+//               <Form.Label>Email</Form.Label>
+//               <Form.Control
+//                 type="email"
+//                 name="email"
+//                 value={newUser.email}
+//                 onChange={handleInputChange}
+//                 required
+//               />
+//             </Form.Group>
+//             <Form.Group controlId="formPhoneNumber">
+//               <Form.Label>Phone Number</Form.Label>
+//               <Form.Control
+//                 type="text"
+//                 name="PhoneNumber"
+//                 value={newUser.PhoneNumber}
+//                 onChange={handleInputChange}
+//                 required
+//               />
+//             </Form.Group>
+//             <Form.Group controlId="formActive">
+//               <Form.Label>Active</Form.Label>
+//               <Form.Control
+//                 as="select"
+//                 name="Active"
+//                 value={newUser.Active}
+//                 onChange={handleInputChange}
+//               >
+//                 <option value="True">True</option>
+//                 <option value="False">False</option>
+//               </Form.Control>
+//             </Form.Group>
+//             <div className="d-flex justify-content-end mt-3">
+//               <Button variant="primary" type="submit" className="me-2">
+//                 Save User
+//               </Button>
+//               <Button variant="secondary" onClick={handleCloseAddUserForm}>
+//                 Cancel
+//               </Button>
+//             </div>
+//           </Form>
+//         </Modal.Body>
+//       </Modal>
+
+//       {/* Edit User Modal */}
+//       <Modal 
+//         show={showEditUserForm} 
+//         onHide={handleCloseEditUserForm} 
+//         centered
+//       >
+//         <Modal.Header closeButton>
+//           <Modal.Title>Edit User</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>
+//           <Form onSubmit={handleEditFormSubmit}>
+//             <Form.Group controlId="formUsername">
+//               <Form.Label>Username</Form.Label>
+//               <Form.Control
+//                 type="text"
+//                 name="username"
+//                 value={editUser ? editUser.username : ''}
+//                 onChange={handleEditInputChange}
+//                 required
+//               />
+//             </Form.Group>
+//             <Form.Group controlId="formEmail">
+//               <Form.Label>Email</Form.Label>
+//               <Form.Control
+//                 type="email"
+//                 name="email"
+//                 value={editUser ? editUser.email : ''}
+//                 onChange={handleEditInputChange}
+//                 required
+//               />
+//             </Form.Group>
+//             <Form.Group controlId="formPhoneNumber">
+//               <Form.Label>Phone Number</Form.Label>
+//               <Form.Control
+//                 type="text"
+//                 name="PhoneNumber"
+//                 value={editUser ? editUser.PhoneNumber : ''}
+//                 onChange={handleEditInputChange}
+//                 required
+//               />
+//             </Form.Group>
+//             <Form.Group controlId="formActive">
+//               <Form.Label>Active</Form.Label>
+//               <Form.Control
+//                 as="select"
+//                 name="Active"
+//                 value={editUser ? editUser.Active : ''}
+//                 onChange={handleEditInputChange}
+//               >
+//                 <option value="True">True</option>
+//                 <option value="False">False</option>
+//               </Form.Control>
+//             </Form.Group>
+//             <div className="d-flex justify-content-end mt-3">
+//               <Button variant="primary" type="submit" className="me-2">
+//                 Update User
+//               </Button>
+//               <Button variant="secondary" onClick={handleCloseEditUserForm}>
+//                 Cancel
+//               </Button>
+//             </div>
+//           </Form>
+//         </Modal.Body>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default VendorManagementPage;
